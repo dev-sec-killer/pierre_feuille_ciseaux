@@ -42,6 +42,9 @@ class _GameScreenState extends State<GameScreen> {
   String? playerChoice;
   String? computerChoice;
   String result = '';
+  Color resultColor = Colors.grey;
+  int playerScore = 0;
+  int computerScore = 0;
 
   final Random random = Random();
 
@@ -54,11 +57,26 @@ class _GameScreenState extends State<GameScreen> {
 
       if (choice == computerPick) {
         result = 'Égalité !';
+        resultColor = Colors.grey;
       } else if (beats[choice] == computerPick) {
         result = 'Tu as gagné ! 🎉';
+        resultColor = Colors.green;
+        playerScore++;
       } else {
         result = 'Perdu… 😢';
+        resultColor = Colors.red;
+        computerScore++;
       }
+    });
+  }
+
+  void reset() {
+    setState(() {
+      playerChoice = null;
+      computerChoice = null;
+      result = '';
+      playerScore = 0;
+      computerScore = 0;
     });
   }
 
@@ -68,11 +86,28 @@ class _GameScreenState extends State<GameScreen> {
       appBar: AppBar(
         title: const Text('Pierre-Feuille-Ciseaux'),
         centerTitle: true,
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
+                child: Text(
+                  'Toi  $playerScore  –  $computerScore  Ordi',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
             const Text(
               'Fais ton choix !',
               style: TextStyle(fontSize: 28),
@@ -102,10 +137,17 @@ class _GameScreenState extends State<GameScreen> {
               const SizedBox(height: 24),
               Text(
                 result,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
+                  color: resultColor,
                 ),
+              ),
+              const SizedBox(height: 16),
+              TextButton.icon(
+                onPressed: reset,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Recommencer'),
               ),
             ],
           ],
