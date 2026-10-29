@@ -6,6 +6,12 @@ const Map<String, String> emojis = {
   'Feuille': '✋',
   'Ciseaux': '✌️',
 };
+
+const Map<String, String> beats = {
+  'Pierre': 'Ciseaux', // la pierre casse les ciseaux
+  'Feuille': 'Pierre', // la feuille enveloppe la pierre
+  'Ciseaux': 'Feuille', // les ciseaux coupent la feuille
+};
 void main(List<String> args) {
   runApp(const MyApp());
 }
@@ -35,6 +41,7 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   String? playerChoice;
   String? computerChoice;
+  String result = '';
 
   final Random random = Random();
 
@@ -44,6 +51,14 @@ class _GameScreenState extends State<GameScreen> {
     setState(() {
       playerChoice = choice;
       computerChoice = computerPick;
+
+      if (choice == computerPick) {
+        result = 'Égalité !';
+      } else if (beats[choice] == computerPick) {
+        result = 'Tu as gagné ! 🎉';
+      } else {
+        result = 'Perdu… 😢';
+      }
     });
   }
 
@@ -75,7 +90,7 @@ class _GameScreenState extends State<GameScreen> {
               ],
             ),
             const SizedBox(height: 32),
-            if (playerChoice != null && computerChoice != null)
+            if (playerChoice != null && computerChoice != null) ...[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -84,6 +99,15 @@ class _GameScreenState extends State<GameScreen> {
                   buildChoice('Ordi', computerChoice!),
                 ],
               ),
+              const SizedBox(height: 24),
+              Text(
+                result,
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ],
         ),
       ),
