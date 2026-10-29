@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
+const Map<String, String> emojis = {
+  'Pierre': '✊',
+  'Feuille': '✋',
+  'Ciseaux': '✌️',
+};
 void main(List<String> args) {
   runApp(const MyApp());
 }
@@ -20,8 +26,26 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class GameScreen extends StatelessWidget {
+class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
+  @override
+  State<GameScreen> createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<GameScreen> {
+  String? playerChoice;
+  String? computerChoice;
+
+  final Random random = Random();
+
+  void play(String choice) {
+    final choices = emojis.keys.toList();
+    final computerPick = choices[random.nextInt(choices.length)];
+    setState(() {
+      playerChoice = choice;
+      computerChoice = computerPick;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,26 +66,36 @@ class GameScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ChoiceButton(
-                  emoji: '✊',
-                  name: 'Pierre',
-                  onPressed: () => debugPrint('Pierre'),
-                ),
-                ChoiceButton(
-                  emoji: '✋',
-                  name: 'Feuille',
-                  onPressed: () => debugPrint('Feuille'),
-                ),
-                ChoiceButton(
-                  emoji: '✌️',
-                  name: 'Ciseaux',
-                  onPressed: () => debugPrint('Ciseaux'),
-                ),
+                for (final name in emojis.keys)
+                  ChoiceButton(
+                    emoji: emojis[name]!,
+                    name: name,
+                    onPressed: () => play(name),
+                  ),
               ],
             ),
+            const SizedBox(height: 32),
+            if (playerChoice != null && computerChoice != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  buildChoice('Toi', playerChoice!),
+                  const Text('VS', style: TextStyle(fontSize: 24)),
+                  buildChoice('Ordi', computerChoice!),
+                ],
+              ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildChoice(String title, String choice) {
+    return Column(
+      children: [
+        Text(title, style: const TextStyle(fontSize: 18)),
+        Text(emojis[choice]!, style: const TextStyle(fontSize: 64)),
+      ],
     );
   }
 }
